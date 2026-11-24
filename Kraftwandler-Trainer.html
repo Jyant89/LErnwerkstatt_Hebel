@@ -1,0 +1,392 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kraftwandler-Trainer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: Kopf mit Stations-Navigation, darunter je eine Station: Erklärung, interaktive Übung, Merksatz und Satzanfänge */
+:root{
+  --bg:#EEF2F5; --panel:#FBFCFD; --ink:#1D2B36; --muted:#55636F; --line:#C9D4DE;
+  --kraft:#C2560E; --last:#1F5F9E; --piv:#2E7D32; --wood:#C8935A; --stand:#9AA5B1; --soft:#DCE8F4; --rolle:#FBE3D2;
+  --ok:#2E7D32; --okbg:#E3F1E4; --bad:#A32D2D; --badbg:#FBE7E7; --tip:#FFF4D6; --tipline:#E0B84A; --fig:#FFFFFF;
+  --display:'Nunito',Verdana,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141B21; --panel:#1C252D; --ink:#E8EEF2; --muted:#A7B4BF; --line:#34424E;
+  --kraft:#F2A66B; --last:#8DBDEB; --piv:#7CC47F; --wood:#B98A5A; --stand:#6B7783; --soft:#22374A; --rolle:#5A3420;
+  --ok:#7CC47F; --okbg:#1E3321; --bad:#F09595; --badbg:#3A1F1F; --tip:#3A2F17; --tipline:#8A6A1E; --fig:#F4F6F8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141B21; --panel:#1C252D; --ink:#E8EEF2; --muted:#A7B4BF; --line:#34424E;
+  --kraft:#F2A66B; --last:#8DBDEB; --piv:#7CC47F; --wood:#B98A5A; --stand:#6B7783; --soft:#22374A; --rolle:#5A3420;
+  --ok:#7CC47F; --okbg:#1E3321; --bad:#F09595; --badbg:#3A1F1F; --tip:#3A2F17; --tipline:#8A6A1E; --fig:#F4F6F8; color-scheme:dark}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:17px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1100px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+header.top .in{max-width:1100px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.brand{font-weight:800;margin-right:8px}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-weight:700;font-size:15px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:4px 12px}
+nav a[aria-current="page"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+h1{font-size:32px;margin:0;font-weight:800;text-wrap:balance}
+h2{font-size:26px;margin:0;font-weight:800;text-wrap:balance}
+h3{font-size:19px;margin:0 0 6px;font-weight:800}
+p{margin:0}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--kraft)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.fig{background:var(--fig);border-radius:12px;padding:8px}
+.fig svg{width:100%;height:auto;display:block}
+.merk{background:var(--tip);border:1px solid var(--tipline);border-radius:12px;padding:12px 16px}
+.satz{border:1.5px dashed var(--line);border-radius:12px;padding:10px 16px;font-size:15px}
+.satz ul{margin:4px 0 0;padding-left:20px}
+.b{font:inherit;font-weight:700;font-size:15px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer}
+.b:hover{border-color:var(--last)}
+.b.pri{border-color:var(--kraft);color:var(--kraft)}
+.b[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.b:focus-visible,nav a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--last);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input[type=text]{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--panel);color:var(--ink)}
+input[type=text]{width:110px;font-family:var(--mono);text-align:center}
+.ok{border-color:var(--ok)!important;background:var(--okbg)!important}
+.bad{border-color:var(--bad)!important;background:var(--badbg)!important}
+.msg{font-weight:700;min-height:1.4em}
+.msg.ok{color:var(--ok);background:none!important} .msg.bad{color:var(--bad);background:none!important}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{border:1.5px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.card .name{font-weight:800;text-align:center}
+.check li{list-style:none;display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line)}
+.check ul{padding:0;margin:0}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--ok)}
+.check a{color:var(--last);font-weight:700}
+.task{font-size:18px;font-weight:600}
+.steps{font-family:var(--mono);font-size:15px;background:var(--soft);border-radius:10px;padding:10px 14px;white-space:pre-wrap}
+.num{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--kraft)}
+.q{border-bottom:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:6px}
+.q .opts{display:flex;flex-wrap:wrap;gap:6px}
+.score{font-size:22px;font-weight:800}
+.tablewrap{overflow-x:auto}
+table.cmp{border-collapse:collapse;width:100%;min-width:480px}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+table.cmp th{background:var(--ink);color:var(--panel)}
+</style>
+
+<header class="top"><div class="in">
+  <span class="brand">Kraftwandler-Trainer</span>
+  <nav id="nav">
+    <a href="#start">Start</a><a href="#station-1">1 Begriffe</a><a href="#station-2">2 Hebelarten</a><a href="#station-3">3 Hebelgesetz</a><a href="#station-4">4 Goldene Regel</a><a href="#station-5">5 Rollen</a><a href="#probe">Probetest</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- START -->
+<section data-view="start" class="panel">
+  <span class="eyebrow">Vorbereitung auf die Lernkontrolle</span>
+  <h1>Hebel, Goldene Regel und Rollen</h1>
+  <p>Hier übst du alles für die Lernkontrolle. Arbeite die Stationen der Reihe nach durch. Hake auf der Checkliste ab, was du sicher kannst. Am Ende machst du den Probetest.</p>
+  <div class="check"><h3>Meine Checkliste</h3><ul id="checklist"></ul></div>
+  <p class="msg" id="checkmsg"></p>
+  <p style="font-size:14px;color:var(--muted)">Deine Häkchen bleiben nur in diesem Browser gespeichert.</p>
+</section>
+
+<!-- STATION 1 -->
+<section data-view="station-1" hidden class="grid2">
+  <div class="panel">
+    <span class="eyebrow">Station 1 · ★</span><h2>Die Teile eines Hebels</h2>
+    <p>Ein Hebel ist eine feste Stange, die sich um einen Punkt dreht. Diesen Punkt nennt man <b>Drehachse</b>. Du drückst mit der <b>Kraft</b>. Der Hebel hebt die <b>Last</b>.</p>
+    <p>Der <b>Kraftarm</b> ist der Abstand von der Drehachse bis zur Kraft. Der <b>Lastarm</b> ist der Abstand von der Drehachse bis zur Last.</p>
+    <div class="merk"><b>Merke:</b> Hebelarme misst man immer von der Drehachse aus.</div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Die Drehachse ist der Punkt, um den …</li><li>Der Kraftarm reicht von … bis …</li></ul></div>
+  </div>
+  <div class="panel">
+    <h3>Übung: Beschrifte die Wippe</h3>
+    <div class="fig" id="s1fig"></div>
+    <div class="row" id="s1sel"></div>
+    <div class="row"><button class="b pri" id="s1check">Prüfen</button><button class="b" id="s1sol" aria-pressed="false">Lösungsbild zeigen</button></div>
+    <p class="msg" id="s1msg" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- STATION 2 -->
+<section data-view="station-2" hidden class="panel">
+  <span class="eyebrow">Station 2 · ★</span><h2>Einseitig oder zweiseitig?</h2>
+  <div class="grid2">
+    <p><b>Zweiseitiger Hebel:</b> Die Drehachse liegt zwischen Kraft und Last. Kraft und Last sind auf verschiedenen Seiten. Beispiel: Wippe.</p>
+    <p><b>Einseitiger Hebel:</b> Die Drehachse liegt am Ende. Kraft und Last sind auf derselben Seite. Beispiel: Schubkarre.</p>
+  </div>
+  <p>Wo ist die Drehachse? Entscheide für jedes Gerät.</p>
+  <div class="cards" id="s2cards"></div>
+  <p class="msg" id="s2msg" aria-live="polite"></p>
+  <div class="satz"><b>Satzanfänge</b><ul><li>Die Schere ist ein … Hebel, weil die Drehachse …</li><li>Bei der Schubkarre liegen Kraft und Last …</li></ul></div>
+</section>
+
+<!-- STATION 3 -->
+<section data-view="station-3" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="panel">
+    <span class="eyebrow">Station 3 · ★★</span><h2>Das Hebelgesetz</h2>
+    <div class="merk"><b>Hebelgesetz:</b> Ein Hebel ist im Gleichgewicht, wenn gilt:<br><b>Kraft · Kraftarm = Last · Lastarm</b> &nbsp; (F₁ · a₁ = F₂ · a₂)</div>
+    <p>Umrechnen: 10 g ≙ 0,1 N · 50 g ≙ 0,5 N · 100 g ≙ 1 N</p>
+  </div>
+  <div class="panel">
+    <h3>Hebel-Labor: Bringe den Hebel ins Gleichgewicht</h3>
+    <div class="fig"><svg id="lever" viewBox="0 0 680 280" role="img" aria-label="Zweiseitiger Hebel mit Gewichten"></svg></div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:6px"><b style="color:var(--last)">Links</b>
+        <label>Gewicht: <select id="lw"></select></label>
+        <label>Abstand: <span class="num" id="lav"></span><input type="range" id="la" min="2" max="20" step="2" value="4"></label></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><b style="color:var(--kraft)">Rechts</b>
+        <label>Gewicht: <select id="rw"></select></label>
+        <label>Abstand: <span class="num" id="rav"></span><input type="range" id="ra" min="2" max="20" step="2" value="8"></label></div>
+    </div>
+    <div class="steps" id="leverTxt" aria-live="polite"></div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Links ist das Produkt …, rechts ist es … .</li><li>Die Seite mit dem größeren Produkt …</li></ul></div>
+  </div>
+  <div class="panel">
+    <h3>Gleichgewichts-Trainer: Was passiert?</h3>
+    <p>Der Hebel wird festgehalten. Rechne die Produkte aus und entscheide: Was passiert, wenn man loslässt?</p>
+    <div class="fig"><svg id="gglev" viewBox="0 0 680 280" role="img" aria-label="Hebel, der festgehalten wird"></svg></div>
+    <p class="task" id="ggt"></p>
+    <div class="row" id="ggbtns"><button class="b" data-v="0">Gleichgewicht</button><button class="b" data-v="-1">links sinkt</button><button class="b" data-v="1">rechts sinkt</button></div>
+    <div class="row" id="ggfind" hidden><label for="ggin">Abstand rechts:</label><input type="text" id="ggin" inputmode="decimal"> cm <button class="b pri" id="ggcheck">Prüfen</button></div>
+    <p class="msg" id="ggmsg" aria-live="polite"></p>
+    <div class="steps" id="ggsteps" hidden></div>
+    <div class="row"><button class="b" id="ggnew">Nächster Hebel</button><span class="num" id="ggscore"></span></div>
+  </div>
+  <div class="panel">
+    <h3>Rechentrainer Hebelgesetz</h3>
+    <p class="task" id="ht"></p>
+    <div class="row"><label for="hin">Ergebnis:</label><input type="text" id="hin" inputmode="decimal"><span id="hunit" class="num"></span>
+      <button class="b pri" id="hcheck">Prüfen</button><button class="b" id="hhelp">Rechenweg</button><button class="b" id="hnew">Neue Aufgabe</button></div>
+    <p class="msg" id="hmsg" aria-live="polite"></p>
+    <div class="steps" id="hsteps" hidden></div>
+    <p style="font-size:14px;color:var(--muted)">Schreibe im Heft immer: Gegeben · Gesucht · Rechnung · Antwortsatz.</p>
+  </div>
+</section>
+
+<!-- STATION 4 -->
+<section data-view="station-4" hidden class="grid2">
+  <div class="panel">
+    <span class="eyebrow">Station 4 · ★</span><h2>Die Goldene Regel</h2>
+    <div class="merk"><b>Goldene Regel der Mechanik:</b> Was man an Kraft spart, muss man an Weg zusetzen.</div>
+    <p>Ist der Kraftarm 3-mal so lang wie der Lastarm, brauchst du nur ein Drittel der Kraft. Dafür musst du 3-mal so weit drücken, wie die Last steigt.</p>
+    <label>Kraftarm : Lastarm = <span class="num" id="grv"></span> : 1<input type="range" id="gr" min="1" max="6" step="1" value="3"></label>
+    <div class="steps" id="grTxt"></div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Ich spare Kraft, aber ich muss dafür …</li><li>Der Kraftweg ist … so lang wie der Lastweg, weil …</li></ul></div>
+  </div>
+  <div class="panel"><h3>Richtig oder falsch?</h3><div id="grQuiz"></div><p class="msg" id="grmsg"></p></div>
+</section>
+
+<!-- STATION 5 -->
+<section data-view="station-5" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="panel">
+    <span class="eyebrow">Station 5 · ★★</span><h2>Feste und lose Rolle</h2>
+    <div class="grid2">
+      <div class="fig"><svg viewBox="0 0 520 260" role="img" aria-label="Links eine feste Rolle, rechts eine lose Rolle"><g id="rollen"></g></svg></div>
+      <div class="tablewrap"><table class="cmp"><tr><th></th><th>Feste Rolle</th><th>Lose Rolle</th></tr>
+        <tr><td><b>Rolle</b></td><td>oben befestigt</td><td>hängt im Seil, bewegt sich mit</td></tr>
+        <tr><td><b>Zugkraft</b></td><td>= Last</td><td>= (Last + Rolle) : 2</td></tr>
+        <tr><td><b>Kraftweg</b></td><td>= Lastweg</td><td>= 2 · Lastweg</td></tr>
+        <tr><td><b>Wozu?</b></td><td>Richtung ändern</td><td>Kraft sparen</td></tr></table></div>
+    </div>
+    <div class="merk"><b>Warum halbe Kraft?</b> Die lose Rolle hängt an zwei Seilstücken. Jedes trägt die Hälfte.</div>
+  </div>
+  <div class="panel">
+    <h3>Rechentrainer Rollen</h3>
+        <p class="task" id="rt"></p>
+    <div class="row"><label for="rF">Zugkraft:</label><input type="text" id="rF" inputmode="decimal"> N <label for="rS">Seil ziehen:</label><input type="text" id="rS" inputmode="decimal"> m
+      <button class="b pri" id="rcheck">Prüfen</button><button class="b" id="rhelp">Rechenweg</button><button class="b" id="rnew">Neue Aufgabe</button></div>
+    <p class="msg" id="rmsg" aria-live="polite"></p>
+    <div class="steps" id="rsteps" hidden></div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Die feste Rolle ändert nur …</li><li>Bei der losen Rolle hängt die Last an … Seilstücken, deshalb …</li></ul></div>
+  </div>
+</section>
+
+<!-- PROBE -->
+<section data-view="probe" hidden class="panel">
+  <span class="eyebrow">Probetest</span><h2>Bist du bereit?</h2>
+  <p>13 Fragen aus allen Stationen. Wähle jeweils eine Antwort. Danach siehst du, welche Station du noch üben solltest.</p>
+  <div id="probeQ"></div>
+  <div class="row"><button class="b pri" id="pcheck">Auswerten</button><button class="b" id="preset">Neu starten</button></div>
+  <p class="score" id="pscore" aria-live="polite"></p>
+  <p id="ptip"></p>
+</section>
+
+</main>
+
+<script>
+const SVG={"task": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text><line x1='200' y1='206' x2='300' y2='206' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='130' x2='200' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='300' y1='200' x2='300' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='200' y1='206' x2='80' y2='206' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='130' x2='200' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='80' y1='134' x2='80' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='80' y1='200' x2='80' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='162' stroke='#1D2B36' stroke-width='5'/><polygon points='300,174 293,162 307,162' fill='#1D2B36'/><line x1='80' y1='134' x2='80' y2='162' stroke='#1D2B36' stroke-width='5'/><polygon points='80,174 73,162 87,162' fill='#1D2B36'/><circle cx='200' cy='130' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='200' cy='109' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='200' y='114.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text><circle cx='323' cy='161' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='323' y='166.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='103' cy='161' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='103' y='166.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='250' cy='223' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='250' y='228.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text><circle cx='140' cy='223' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='140' y='228.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text></svg>", "sol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text><line x1='200' y1='206' x2='300' y2='206' stroke='#C2560E' stroke-width='3'/><line x1='200' y1='130' x2='200' y2='206' stroke='#C2560E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#C2560E' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='206' stroke='#C2560E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='300' y1='200' x2='300' y2='212' stroke='#C2560E' stroke-width='2.5'/><line x1='200' y1='206' x2='80' y2='206' stroke='#1F5F9E' stroke-width='3'/><line x1='200' y1='130' x2='200' y2='206' stroke='#1F5F9E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#1F5F9E' stroke-width='2.5'/><line x1='80' y1='134' x2='80' y2='206' stroke='#1F5F9E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='80' y1='200' x2='80' y2='212' stroke='#1F5F9E' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='162' stroke='#C2560E' stroke-width='5'/><polygon points='300,174 293,162 307,162' fill='#C2560E'/><line x1='80' y1='134' x2='80' y2='162' stroke='#1F5F9E' stroke-width='5'/><polygon points='80,174 73,162 87,162' fill='#1F5F9E'/><circle cx='200' cy='130' r='8' fill='#2E7D32' stroke='white' stroke-width='2.5'/><text x='200' y='114' fill='#2E7D32' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Drehachse</text><text x='310' y='166' fill='#C2560E' font-size='14' font-weight='bold' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Kraft</text><text x='90' y='166' fill='#1F5F9E' font-size='14' font-weight='bold' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Last</text><text x='250' y='228' fill='#C2560E' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kraftarm</text><text x='140' y='228' fill='#1F5F9E' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Lastarm</text></svg>", "sk": {"Wippe": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text></svg>", "typ": "zweiseitig"}, "Schere": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schere'><rect width='400' height='250' fill='white'/><line x1='200' y1='120' x2='360' y2='100' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='360' y2='140' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='92' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='148' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><ellipse cx='72' cy='86' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><ellipse cx='72' cy='154' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><rect x='262' y='84' width='14' height='72' fill='#E6D3A3' stroke='#1D2B36' stroke-width='1.5'/><text x='269' y='176' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Pappe</text><circle cx='200' cy='120' r='6' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "zweiseitig"}, "Zange": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Zange'><rect width='400' height='250' fill='white'/><line x1='230' y1='120' x2='300' y2='112' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='230' y1='120' x2='300' y2='128' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='230' y1='120' x2='55' y2='96' stroke='#E8A33D' stroke-width='12' stroke-linecap='round'/><line x1='230' y1='120' x2='55' y2='144' stroke='#E8A33D' stroke-width='12' stroke-linecap='round'/><circle cx='282' cy='120' r='5' fill='#B87333' stroke='#1D2B36' stroke-width='1.5'/><text x='282' y='152' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Draht</text><circle cx='230' cy='120' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "zweiseitig"}, "Brechstange": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Brechstange'><rect width='400' height='250' fill='white'/><line x1='20' y1='196' x2='380' y2='196' stroke='#7A8794' stroke-width='3'/><path d='M300,196 L300,150 Q330,128 372,146 L372,196 Z' fill='#B5B5B5' stroke='#1D2B36' stroke-width='2'/><text x='345' y='186' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Stein</text><path d='M246,196 L252,168 L272,168 L278,196 Z' fill='#8D8D8D' stroke='#1D2B36' stroke-width='2'/><line x1='40' y1='92' x2='318' y2='176' stroke='#1D2B36' stroke-width='8' stroke-linecap='round'/></svg>", "typ": "zweiseitig"}, "Schubkarre": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schubkarre'><rect width='400' height='250' fill='white'/><line x1='20' y1='200' x2='380' y2='200' stroke='#7A8794' stroke-width='3'/><circle cx='70' cy='174' r='26' fill='white' stroke='#1D2B36' stroke-width='4'/><line x1='70' y1='174' x2='360' y2='118' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><path d='M112,160 L102,112 L220,92 L226,140 Z' fill='#B7C4CF' stroke='#1D2B36' stroke-width='2'/><path d='M106,110 Q160,80 216,94 L218,104 L108,122 Z' fill='#C8A06A' stroke='#1D2B36' stroke-width='1.5'/><text x='160' y='82' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Sand</text><circle cx='70' cy='174' r='5' fill='#1D2B36'/></svg>", "typ": "einseitig"}, "Flaschenöffner": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Flaschenöffner'><rect width='400' height='250' fill='white'/><rect x='62' y='150' width='56' height='100' fill='#3F7A52' stroke='#1D2B36' stroke-width='2'/><rect x='54' y='132' width='72' height='14' rx='2' fill='#D9B44A' stroke='#1D2B36' stroke-width='2'/><text x='8' y='172' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Deckel</text><path d='M58,130 L120,123 Q132,124 128,140 L120,142 L122,130 L340,104' fill='none' stroke='#1D2B36' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/><text x='232' y='200' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Flasche</text></svg>", "typ": "einseitig"}, "Nussknacker": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Nussknacker'><rect width='400' height='250' fill='white'/><line x1='60' y1='120' x2='350' y2='92' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='60' y1='120' x2='350' y2='148' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><circle cx='130' cy='120' r='14' fill='#A0522D' stroke='#1D2B36' stroke-width='2'/><text x='130' y='162' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Nuss</text><circle cx='60' cy='120' r='8' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}, "Pinzette": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Pinzette'><rect width='400' height='250' fill='white'/><line x1='50' y1='120' x2='340' y2='110' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><line x1='50' y1='120' x2='340' y2='130' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><rect x='190' y='100' width='50' height='40' rx='14' fill='#F4C27A' opacity='.55'/><text x='232' y='168' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Finger</text><circle cx='343' cy='120' r='6' fill='#6B3FA8'/><text x='350' y='150' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Splitter</text><circle cx='50' cy='120' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}, "Unterarm": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Unterarm'><rect width='400' height='250' fill='white'/><path d='M70,30 L110,30 L112,150 L70,150 Z' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><text x='62' y='70' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='end' font-family='DejaVu Sans, Arial, sans-serif'>Oberarm</text><path d='M90,140 L330,140 L330,165 L90,165 Z' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><text x='240' y='186' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Unterarm</text><path d='M112,48 Q150,90 132,142' fill='none' stroke='#C0392B' stroke-width='9' stroke-linecap='round'/><text x='158' y='66' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Muskel</text><circle cx='342' cy='122' r='18' fill='#4A6FA5' stroke='#1D2B36' stroke-width='2'/><text x='342' y='96' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Ball</text><circle cx='92' cy='152' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}}};
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>{let s=(Math.round(x*100)/100).toFixed(d);if(d>0)s=s.replace(/\.?0+$/,'');return s.replace('.',',')};
+const parse=v=>{const t=String(v||'').trim().replace(',','.');return t===''?NaN:Number(t)};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* Router */
+const VIEWS=['start','station-1','station-2','station-3','station-4','station-5','probe'];
+function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'start';
+  document.querySelectorAll('[data-view]').forEach(s=>s.hidden=s.dataset.view!==v);
+  document.querySelectorAll('#nav a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+v?'page':'false'));
+  if(v==='station-3')lever(); window.scrollTo(0,0)}
+addEventListener('hashchange',route);
+
+/* Checkliste */
+const CL=[['Ich kann die Teile eines Hebels benennen.','station-1'],['Ich kann einseitige und zweiseitige Hebel unterscheiden.','station-2'],['Ich kann das Hebelgesetz aufschreiben.','station-3'],['Ich kann mit dem Hebelgesetz rechnen.','station-3'],['Ich kann prüfen, ob ein Hebel im Gleichgewicht ist.','station-3'],['Ich kann ausrechnen, wo ein Gewicht hängen muss, damit Gleichgewicht herrscht.','station-3'],['Ich kann die Goldene Regel erklären.','station-4'],['Ich kann feste und lose Rolle unterscheiden.','station-5'],['Ich kann Kraft und Seil bei der losen Rolle berechnen.','station-5'],['Ich habe den Probetest gemacht.','probe']];
+let cl=store.get('kw-check',CL.map(()=>false));
+function drawCL(){$('checklist').innerHTML=CL.map((c,i)=>`<li><input type="checkbox" id="cl${i}" ${cl[i]?'checked':''}><label for="cl${i}">${c[0]} <a href="#${c[1]}">Üben</a></label></li>`).join('');
+  CL.forEach((c,i)=>$('cl'+i).onchange=e=>{cl[i]=e.target.checked;store.set('kw-check',cl);msgCL()});msgCL()}
+function msgCL(){const n=cl.filter(Boolean).length;$('checkmsg').textContent=`${n} von ${CL.length} Punkten sicher.`+(n===CL.length?' Super, du bist gut vorbereitet!':'');$('checkmsg').className='msg'+(n===CL.length?' ok':'')}
+
+/* Station 1 */
+const L1={A:'Kraft',B:'Kraftarm',C:'Drehachse',D:'Lastarm',E:'Last'};
+$('s1fig').innerHTML=SVG.task;
+const opts=['Drehachse','Kraft','Last','Kraftarm','Lastarm'];
+$('s1sel').innerHTML=Object.keys(L1).map(k=>`<label><b>${k}</b> <select id="s1${k}"><option value="">…</option>${opts.map(o=>`<option>${o}</option>`).join('')}</select></label>`).join('');
+Object.keys(L1).forEach(k=>$('s1'+k).onchange=e=>{e.target.className='';$('s1msg').textContent=''});
+$('s1check').onclick=()=>{let e=0,w=0;Object.entries(L1).forEach(([k,v])=>{const el=$('s1'+k);if(!el.value){e++;el.className='bad'}else{el.className=el.value===v?'ok':'bad';if(el.value!==v)w++}});
+  const m=$('s1msg');if(e){m.className='msg bad';m.textContent='Wähle für jeden Buchstaben einen Begriff.'}else if(w){m.className='msg bad';m.textContent=`${w} noch falsch. Tipp: Die Arme sind die gestrichelten Strecken. Sie beginnen an der Drehachse.`}else{m.className='msg ok';m.textContent='Alles richtig!'}};
+/*s1*/$('s1sol').onclick=e=>{const on=e.target.getAttribute('aria-pressed')!=='true';e.target.setAttribute('aria-pressed',on);$('s1fig').innerHTML=on?SVG.sol:SVG.task;e.target.textContent=on?'Aufgabenbild zeigen':'Lösungsbild zeigen'};
+
+/* Station 2 */
+const s2ans={};
+$('s2cards').innerHTML=Object.keys(SVG.sk).map((n,i)=>`<div class="card"><div class="fig">${SVG.sk[n].svg}</div><div class="name">${n}</div><div class="row" style="justify-content:center"><button class="b" data-n="${i}" data-v="einseitig">einseitig</button><button class="b" data-n="${i}" data-v="zweiseitig">zweiseitig</button></div></div>`).join('');
+$('s2cards').querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=Object.keys(SVG.sk)[b.dataset.n],ok=SVG.sk[n].typ===b.dataset.v;
+  b.parentNode.querySelectorAll('button').forEach(x=>x.className='b');b.className='b '+(ok?'ok':'bad');s2ans[n]=ok;
+  const done=Object.keys(s2ans).length,right=Object.values(s2ans).filter(Boolean).length;
+  $('s2msg').className='msg '+(ok?'ok':'bad');$('s2msg').textContent=(ok?`Richtig: ${n} ist ${SVG.sk[n].typ}.`:`Noch nicht. Suche die Drehachse beim Gerät „${n}“.`)+` (${right} von ${Object.keys(SVG.sk).length} richtig)`});
+
+/* Station 3: Hebel-Labor */
+const WS=[0.1,0.2,0.3,0.5,0.6,0.7,0.8,1.1];
+['lw','rw'].forEach((id,j)=>{$(id).innerHTML=WS.map(w=>`<option value="${w}" ${w===(j?0.2:0.6)?'selected':''}>${fmt(w,1)} N (${Math.round(w*100)} g)</option>`).join('');$(id).onchange=lever});
+['la','ra'].forEach(id=>$(id).oninput=lever);
+function lever(){const lw=+$('lw').value,rw=+$('rw').value,la=+$('la').value,ra=+$('ra').value;$('lav').textContent=la+' cm';$('rav').textContent=ra+' cm';
+  const ML=lw*la,MR=rw*ra,d=MR-ML,ang=Math.max(-12,Math.min(12,d*6));
+  $('lever').innerHTML=levSVG(lw,la,rw,ra,ang,false);
+  const eq=Math.abs(d)<1e-9;
+  $('leverTxt').textContent=`Links:  ${fmt(lw,1)} N · ${la} cm = ${fmt(ML)} N·cm\nRechts: ${fmt(rw,1)} N · ${ra} cm = ${fmt(MR)} N·cm\n`+(eq?'Beide Produkte sind gleich: Gleichgewicht!':(ML>MR?'Links ist das Produkt größer: Die linke Seite sinkt.':'Rechts ist das Produkt größer: Die rechte Seite sinkt.'));
+  $('leverTxt').style.borderLeft=eq?'6px solid var(--ok)':'6px solid var(--bad)'}
+function levSVG(lw,la,rw,ra,ang,held){
+  const C={ink:'#1D2B36',wood:'#C8935A',last:'#1F5F9E',kraft:'#C2560E',piv:'#2E7D32',st:'#9AA5B1'};
+  const cx=340,cy=110,k=15,rad=ang*Math.PI/180;
+  const pt=x=>[cx+x*k*Math.cos(rad),cy+x*k*Math.sin(rad)];
+  let g=`<rect x="0" y="0" width="680" height="280" fill="#FFFFFF"/><rect x="334" y="${cy}" width="12" height="148" fill="${C.st}"/><rect x="290" y="256" width="100" height="10" fill="${C.st}"/>`;
+  g+=`<g transform="rotate(${ang} ${cx} ${cy})"><rect x="${cx-305}" y="${cy-6}" width="610" height="12" rx="4" fill="${C.wood}" stroke="${C.ink}"/>`;
+  for(let i=-20;i<=20;i+=2)g+=`<circle cx="${cx+i*k}" cy="${cy}" r="2.6" fill="#633806"/>`;
+  for(let i=-20;i<=20;i+=4)if(i)g+=`<text x="${cx+i*k}" y="${cy-12}" text-anchor="middle" font-size="11" fill="#55636F" font-family="JetBrains Mono,monospace">${Math.abs(i)}</text>`;
+  g+=`</g><circle cx="${cx}" cy="${cy}" r="8" fill="${C.piv}" stroke="#fff" stroke-width="2"/>`;
+  const hang=(x,w,col)=>{if(x===null)return '';const [px,py]=pt(x),h=14+w*40;return `<line x1="${px}" y1="${py}" x2="${px}" y2="${py+22}" stroke="${C.ink}" stroke-width="2"/><rect x="${px-14}" y="${py+22}" width="28" height="${h}" rx="3" fill="${col}"/><text x="${px}" y="${py+22+h+18}" text-anchor="middle" font-size="14" font-weight="800" fill="${col}" font-family="Nunito,sans-serif">${fmt(w,1)} N</text>`};
+  g+=hang(-la,lw,C.last)+(ra?hang(ra,rw,C.kraft):'');
+  if(held)g+=`<text x="${cx}" y="276" text-anchor="middle" font-size="13" fill="#55636F" font-family="Nunito,sans-serif">Der Hebel wird noch festgehalten.</text>`;
+  return g}
+
+/* Gleichgewichts-Trainer */
+const GW=[0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0],HOLES=[2,4,6,8,10,12,14,16,18,20];
+let GG=null,ggR=0,ggN=0;
+function newGG(){$('ggmsg').textContent='';$('ggsteps').hidden=true;$('ggin').value='';$('ggin').className='';
+  $('ggbtns').querySelectorAll('button').forEach(b=>{b.className='b';b.disabled=false});
+  const find=Math.random()<0.3;let lw,la,rw,ra;
+  for(;;){lw=rnd(GW);la=rnd(HOLES);rw=rnd(GW);
+    if(find||Math.random()<0.35){ra=lw*la/rw;if(Math.abs(ra-Math.round(ra))<1e-9&&HOLES.includes(Math.round(ra))){ra=Math.round(ra);break}}
+    else{ra=rnd(HOLES);if(Math.abs(lw*la-rw*ra)>1e-9)break}}
+  GG={lw,la,rw,ra,find,ML:lw*la,MR:rw*ra};
+  $('gglev').innerHTML=levSVG(lw,la,rw,find?0:ra,0,true);
+  $('ggbtns').hidden=find;$('ggfind').hidden=!find;
+  $('ggt').textContent=find?`Links hängen ${fmt(lw,1)} N bei ${la} cm. Rechts willst du ${fmt(rw,1)} N aufhängen. In welches Loch muss es, damit Gleichgewicht herrscht?`:`Links: ${fmt(lw,1)} N bei ${la} cm. Rechts: ${fmt(rw,1)} N bei ${ra} cm.`}
+function ggSteps(){const G=GG;return `Links:  ${fmt(G.lw,1)} N · ${G.la} cm = ${fmt(G.ML)} N·cm\n`+(G.find?`Rechts: ${fmt(G.rw,1)} N · a = ${fmt(G.ML)} N·cm\na = ${fmt(G.ML)} N·cm : ${fmt(G.rw,1)} N = ${G.ra} cm`:`Rechts: ${fmt(G.rw,1)} N · ${G.ra} cm = ${fmt(G.MR)} N·cm\n→ `+(Math.abs(G.MR-G.ML)<1e-9?'Gleichgewicht':(G.ML>G.MR?'Links ist größer: links sinkt.':'Rechts ist größer: rechts sinkt.')))}
+function ggDone(ok){ggN++;if(ok)ggR++;$('ggscore').textContent=`${ggR} von ${ggN} richtig`;$('ggsteps').textContent=ggSteps();$('ggsteps').hidden=false;
+  if(!GG.find){const d=GG.MR-GG.ML,ang=Math.abs(d)<1e-9?0:Math.max(-12,Math.min(12,d*6));$('gglev').innerHTML=levSVG(GG.lw,GG.la,GG.rw,GG.ra,ang,false)}
+  else $('gglev').innerHTML=levSVG(GG.lw,GG.la,GG.rw,GG.ra,0,false)}
+$('ggbtns').querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=GG.MR-GG.ML,truth=Math.abs(d)<1e-9?0:(d<0?-1:1),ok=+b.dataset.v===truth;
+  b.className='b '+(ok?'ok':'bad');$('ggbtns').querySelectorAll('button').forEach(x=>x.disabled=true);
+  $('ggmsg').className='msg '+(ok?'ok':'bad');$('ggmsg').textContent=ok?'Richtig!':'Leider falsch. Vergleiche die beiden Produkte.';ggDone(ok)});
+$('ggcheck').onclick=()=>{const x=parse($('ggin').value);if(isNaN(x)){$('ggmsg').className='msg bad';$('ggmsg').textContent='Gib zuerst eine Zahl ein.';$('ggin').className='bad';return}
+  const ok=Math.abs(x-GG.ra)<1e-9;$('ggin').className=ok?'ok':'bad';$('ggmsg').className='msg '+(ok?'ok':'bad');$('ggmsg').textContent=ok?'Richtig!':'Noch nicht. Teile das Produkt links durch das Gewicht rechts.';ggDone(ok)};
+$('ggin').oninput=()=>{$('ggin').className='';$('ggmsg').textContent=''};
+$('ggnew').onclick=newGG;
+
+/* Rechentrainer Hebel */
+let HT=null;
+function newH(){const type=rnd(['F','a','F','a']);$('hin').value='';$('hin').className='';$('hmsg').textContent='';$('hsteps').hidden=true;
+  if(type==='F'){let F2,a1,a2,F1;do{F2=rnd([150,200,240,300,360,400,450,480,600]);a1=rnd([40,60,80,90,100,120]);a2=rnd([10,15,20,30]);F1=F2*a2/a1}while(Math.abs(F1*10-Math.round(F1*10))>1e-9||a2>=a1);
+    HT={ans:F1,unit:'N',txt:`Brechstange: Der Kraftarm ist ${a1} cm lang, der Lastarm ${a2} cm. Der Stein wiegt ${F2} N. Wie groß muss die Kraft sein?`,
+      steps:`Gegeben: a₁ = ${a1} cm, a₂ = ${a2} cm, F₂ = ${F2} N\nGesucht: F₁\nF₁ · ${a1} cm = ${F2} N · ${a2} cm\nF₁ = ${F2*a2} N·cm : ${a1} cm = ${fmt(F1,1)} N\nAntwort: Man braucht eine Kraft von ${fmt(F1,1)} N.`}}
+  else{let F1,a1,F2,a2;do{F1=rnd([200,250,300,350,400]);a1=rnd([1,1.5,2,2.5,3]);F2=rnd([300,400,500,600]);a2=F1*a1/F2}while(Math.abs(a2*100-Math.round(a2*100))>1e-9||F2<=F1);
+    HT={ans:a2,unit:'m',txt:`Wippe: Ein Kind (${F1} N) sitzt ${fmt(a1,1)} m von der Drehachse entfernt. Ein zweites Kind (${F2} N) setzt sich auf die andere Seite. Wie weit von der Drehachse muss es sitzen?`,
+      steps:`Gegeben: F₁ = ${F1} N, a₁ = ${fmt(a1,1)} m, F₂ = ${F2} N\nGesucht: a₂\n${F1} N · ${fmt(a1,1)} m = ${F2} N · a₂\na₂ = ${fmt(F1*a1)} N·m : ${F2} N = ${fmt(a2)} m\nAntwort: Das Kind muss ${fmt(a2)} m von der Drehachse entfernt sitzen.`}}
+  $('ht').textContent=HT.txt;$('hunit').textContent=HT.unit}
+$('hcheck').onclick=()=>{const x=parse($('hin').value),m=$('hmsg');if(isNaN(x)){m.className='msg bad';m.textContent='Gib zuerst eine Zahl ein.';$('hin').className='bad';return}
+  const ok=Math.abs(x-HT.ans)<=Math.max(0.011,HT.ans*0.01);$('hin').className=ok?'ok':'bad';m.className='msg '+(ok?'ok':'bad');m.textContent=ok?'Richtig! Schreibe noch einen Antwortsatz ins Heft.':'Noch nicht. Stelle das Hebelgesetz auf und setze ein. Tipp: Rechenweg.'};
+$('hhelp').onclick=()=>{$('hsteps').textContent=HT.steps;$('hsteps').hidden=false};
+$('hnew').onclick=newH; $('hin').oninput=()=>{$('hin').className='';$('hmsg').textContent=''};
+
+/* Station 4 */
+function gr(){const n=+$('gr').value;$('grv').textContent=n;$('grTxt').textContent=`Last 600 N, Lastweg 2 cm\nKraft  = 600 N : ${n} = ${fmt(600/n,1)} N\nKraftweg = ${n} · 2 cm = ${2*n} cm\nProbe: ${fmt(600/n,1)} N · ${2*n} cm = 1200 N·cm = 600 N · 2 cm`}
+$('gr').oninput=gr;
+const GQ=[['Mit einem Hebel spart man Kraft und Weg.',false,'Man spart Kraft, aber der Weg wird länger.'],
+  ['Wer weniger Kraft braucht, muss einen längeren Weg machen.',true,'Genau das sagt die Goldene Regel.'],
+  ['Sind Kraftarm und Lastarm gleich lang, spart man keine Kraft.',true,'Kraft = Last und Kraftweg = Lastweg.'],
+  ['Die Goldene Regel gilt nur für Hebel, nicht für Rollen.',false,'Sie gilt für alle Kraftwandler, auch für Rollen.']];
+$('grQuiz').innerHTML=GQ.map((q,i)=>`<div class="q"><span>${q[0]}</span><div class="opts"><button class="b" data-i="${i}" data-v="1">richtig</button><button class="b" data-i="${i}" data-v="0">falsch</button></div><span id="grf${i}" style="font-size:15px"></span></div>`).join('');
+$('grQuiz').querySelectorAll('button').forEach(b=>b.onclick=()=>{const q=GQ[b.dataset.i],ok=(b.dataset.v==='1')===q[1];b.parentNode.querySelectorAll('button').forEach(x=>x.className='b');b.className='b '+(ok?'ok':'bad');
+  const f=$('grf'+b.dataset.i);f.textContent=(ok?'Richtig. ':'Leider falsch. ')+q[2];f.style.color=ok?'var(--ok)':'var(--bad)'});
+
+/* Station 5: Zeichnung */
+(function(){const ink='#1D2B36',rope='#8A5A2B',st='#9AA5B1';
+  const pul=(x,y,f)=>`<circle cx="${x}" cy="${y}" r="24" fill="${f}" stroke="${ink}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="#7A8794"/><circle cx="${x}" cy="${y}" r="3" fill="${ink}"/>`;
+  const box=(x,y)=>`<rect x="${x-20}" y="${y}" width="40" height="34" rx="3" fill="#1F5F9E"/><text x="${x}" y="${y+22}" text-anchor="middle" font-size="12" fill="#fff" font-weight="800" font-family="Nunito,sans-serif">Last</text>`;
+  const arr=(x,y1,y2)=>{const d=y2>y1?1:-1;return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2-d*8}" stroke="#C2560E" stroke-width="4"/><polygon points="${x-8},${y2-d*10} ${x+8},${y2-d*10} ${x},${y2+d*3}" fill="#C2560E"/>`};
+  let g=`<rect width="520" height="260" fill="#fff"/><rect x="20" y="20" width="200" height="8" fill="${st}"/><rect x="290" y="20" width="200" height="8" fill="${st}"/>`;
+  g+=`<line x1="120" y1="28" x2="120" y2="60" stroke="${ink}" stroke-width="3"/><line x1="96" y1="60" x2="96" y2="160" stroke="${rope}" stroke-width="3"/><line x1="144" y1="60" x2="144" y2="200" stroke="${rope}" stroke-width="3"/>`+pul(120,60,'#DCE8F4')+box(96,160)+arr(144,190,240);
+  g+=`<text x="120" y="252" text-anchor="middle" font-size="15" font-weight="800" fill="${ink}" font-family="Nunito,sans-serif">feste Rolle</text>`;
+  g+=`<circle cx="356" cy="28" r="4" fill="${ink}"/><line x1="356" y1="28" x2="356" y2="150" stroke="${rope}" stroke-width="3"/><line x1="404" y1="150" x2="404" y2="50" stroke="${rope}" stroke-width="3"/><path d="M356 150 A24 24 0 0 0 404 150" fill="none" stroke="${rope}" stroke-width="3"/>`+pul(380,150,'#FBE3D2')+`<line x1="380" y1="150" x2="380" y2="185" stroke="${ink}" stroke-width="3"/>`+box(380,185)+arr(404,80,35);
+  g+=`<text x="380" y="252" text-anchor="middle" font-size="15" font-weight="800" fill="${ink}" font-family="Nunito,sans-serif">lose Rolle</text>`;
+  $('rollen').innerHTML=g})();
+
+/* Rechentrainer Rollen */
+let RM=1,RT=null;
+function newR(){['rF','rS'].forEach(id=>{$(id).value='';$(id).className=''});$('rmsg').textContent='';$('rsteps').hidden=true;
+  {const L=rnd([100,120,160,180,200,240,280,300,360,400]),R=rnd([10,20,40]),h=rnd([2,3,4,5]);const F=(L+R)/2,s=2*h;
+    RT={F,s,txt:`Ein Eimer (${L} N) hängt an einer losen Rolle (${R} N). Er soll ${h} m nach oben. Wie groß ist die Zugkraft? Wie viel Seil musst du ziehen?`,
+      steps:`Zugkraft = (Last + Rolle) : 2 = (${L} N + ${R} N) : 2 = ${fmt(F,1)} N\nSeil = 2 · Lastweg = 2 · ${h} m = ${s} m\nAntwort: Du brauchst ${fmt(F,1)} N und musst ${s} m Seil ziehen.`}}
+  $('rt').textContent=RT.txt}
+$('rcheck').onclick=()=>{const F=parse($('rF').value),s=parse($('rS').value),m=$('rmsg');
+  if(isNaN(F)||isNaN(s)){m.className='msg bad';m.textContent='Fülle beide Felder aus.';if(isNaN(F))$('rF').className='bad';if(isNaN(s))$('rS').className='bad';return}
+  const okF=Math.abs(F-RT.F)<0.06,okS=Math.abs(s-RT.s)<0.06;$('rF').className=okF?'ok':'bad';$('rS').className=okS?'ok':'bad';
+  m.className='msg '+(okF&&okS?'ok':'bad');m.textContent=okF&&okS?'Beides richtig!':(!okF&&RM===1&&Math.abs(F-(RT.F*2-0)/2)>0&&'Prüfe die Zugkraft: Hast du das Gewicht der Rolle dazugerechnet?')||(!okS?'Prüfe das Seil: Der Kraftweg ist länger als der Lastweg.':'Prüfe die Zugkraft.')};
+$('rhelp').onclick=()=>{$('rsteps').textContent=RT.steps;$('rsteps').hidden=false};
+$('rnew').onclick=newR;['rF','rS'].forEach(id=>$(id).oninput=()=>{$(id).className='';$('rmsg').textContent=''});
+
+/* Probetest */
+const PQ=[
+ ['Wie heißt der Punkt, um den sich ein Hebel dreht?',['Drehachse','Lastarm','Kraftpunkt'],0,1],
+ ['Der Kraftarm ist der Abstand …',['von der Drehachse bis zur Kraft','von der Kraft bis zur Last','von der Drehachse bis zur Last'],0,1],
+ ['Welcher Hebel ist einseitig?',['Wippe','Schere','Schubkarre'],2,2],
+ ['Bei einem zweiseitigen Hebel liegt die Drehachse …',['am Ende','zwischen Kraft und Last','neben der Last'],1,2],
+ ['Wie lautet das Hebelgesetz?',['Kraft + Kraftarm = Last + Lastarm','Kraft · Kraftarm = Last · Lastarm','Kraft · Last = Kraftarm · Lastarm'],1,3],
+ ['Brechstange: Kraftarm 80 cm, Lastarm 20 cm, Last 400 N. Kraft?',['100 N','1600 N','200 N'],0,3],
+ ['Links 0,3 N bei 6 cm, rechts 0,2 N bei 10 cm. Was passiert?',['Gleichgewicht','Links sinkt','Rechts sinkt'],2,3],
+ ['Die Goldene Regel sagt: Was man an Kraft spart, …',['spart man auch an Weg','muss man an Weg zusetzen','ist verloren'],1,4],
+ ['Was bewirkt eine feste Rolle?',['Sie halbiert die Kraft','Sie ändert die Richtung der Kraft','Sie verdoppelt die Kraft'],1,5],
+ ['Lose Rolle: Last 300 N, Rolle 20 N. Zugkraft?',['150 N','160 N','320 N'],1,5],
+ ['Die Last soll mit einer losen Rolle 2 m steigen. Wie viel Seil ziehst du?',['1 m','2 m','4 m'],2,5],
+ ['Links 0,4 N bei 6 cm, rechts 0,3 N bei 8 cm. Was passiert?',['Gleichgewicht','Links sinkt','Rechts sinkt'],0,3],
+ ['Links 0,5 N bei 4 cm. Rechts hängt 0,2 N. In welches Loch muss es für Gleichgewicht?',['bei 8 cm','bei 10 cm','bei 12 cm'],1,3]];
+let PA={};
+function drawP(){PA={};$('probeQ').innerHTML=PQ.map((q,i)=>`<div class="q"><b>${i+1}. ${q[0]}</b><div class="opts">${q[1].map((o,j)=>`<button class="b" data-i="${i}" data-j="${j}" aria-pressed="false">${o}</button>`).join('')}</div></div>`).join('');
+  $('probeQ').querySelectorAll('button').forEach(b=>b.onclick=()=>{PA[b.dataset.i]=+b.dataset.j;b.parentNode.querySelectorAll('button').forEach(x=>{x.setAttribute('aria-pressed',String(x===b));x.className='b'})});
+  $('pscore').textContent='';$('ptip').textContent=''}
+$('pcheck').onclick=()=>{const open=PQ.length-Object.keys(PA).length;if(open){$('pscore').textContent='';$('ptip').innerHTML=`<span style="color:var(--bad);font-weight:700">Beantworte noch ${open} Fragen.</span>`;return}
+  let right=0;const weak=new Set();
+  PQ.forEach((q,i)=>{const ok=PA[i]===q[2];if(ok)right++;else weak.add(q[3]);
+    $('probeQ').querySelectorAll(`button[data-i="${i}"]`).forEach(b=>{if(+b.dataset.j===q[2])b.className='b ok';else if(+b.dataset.j===PA[i])b.className='b bad'})});
+  $('pscore').textContent=`${right} von ${PQ.length} richtig`;
+  $('ptip').innerHTML=weak.size?'Übe noch: '+[...weak].sort().map(s=>`<a href="#station-${s}" style="color:var(--last);font-weight:700">Station ${s}</a>`).join(' · '):'Klasse! Du bist gut vorbereitet. Hake den Probetest auf der Checkliste ab.'};
+$('preset').onclick=drawP;
+
+drawCL();lever();newGG();newH();gr();newR();drawP();route();
+</script>
+
+</body></html>
